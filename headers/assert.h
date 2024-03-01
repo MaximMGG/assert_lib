@@ -15,6 +15,9 @@ namespace ASSERT {
             long assert_total_time;
             long assert_func_time;
             long assert_total_start_time;
+
+            void assert_print_result();
+
         public:
             Assert();
             ~Assert();
