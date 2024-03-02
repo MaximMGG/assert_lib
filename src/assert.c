@@ -1,7 +1,6 @@
 #include "../headers/assert.h"
 #include <util/util.h>
 #include <time.h>
-// #include <stdlib.h>
 #include <string.h>
 
 #define TEST_FILE "=> FILE: %s\n"
@@ -134,12 +133,14 @@ void assert_begin(i32 flags) {
         _ASSERT_SHOW_TOTAL_TIME = true;
         test_start_time = clock();
     }
+    //TODO (Maxim) need to implement this functional
     if (flags & ASSERT_LOG_RESULT) {
         _ASSERT_LOG_RESULT = true;
     }
     if (flags & ASSERT_SHOW_ASSERT_MSG) {
         _ASSERT_SHOW_ASSERT_MSG = true;
     }
+    //TODO (Maxim) need to implement this functional
     if (flags & ASSERT_CRASH_WHEN_FAIL) {
         _ASSERT_CRASH_WHEN_FAIL = true;
     }

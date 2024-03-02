@@ -4,6 +4,7 @@
 #include <util/m_list.h>
 
 typedef char boolean;
+
 #define assert_coll(f) assert_coll_((void (*)()) f, __FILE__, #f)
 
 typedef enum {
@@ -18,11 +19,23 @@ typedef enum {
 
 
 void assert_coll_(void (*func_test)(), char *file, char *func);
+
+//setup functional flags and initialize asserts
 void assert_begin(int flags);
+
+//test will pass if expression == true, otherwise test will fail and msg will
+//copy in fail_msg
 void assert_true(boolean expression, char *msg);
+//test will pass if expression == false, otherwise test will fail and msg will
+//copy in fail_msg
 void assert_false(boolean expression, char *msg);
-void assert_null(void *, char *msg);
+//test will pass if p == NULL, otherwise test will fail and msg will
+//copy in fail_msg
+void assert_null(void *p, char *msg);
+//test will pass if p != NULL, otherwise test will fail and msg will
+//copy in fail_msg
 void assert_not_null(void *p, char *msg);
+//frees resoursec and print info
 void assert_end();
 
 
