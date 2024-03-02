@@ -7,10 +7,12 @@
 #define FUNC_NAME(f) #f
 
 #define TEST_FILE "=> %s\n"
-#define TEST_FUNC_MSG_TIME "\t[==>> ASSERT: FUNC: %s -> %s, TIME: %ld ms]\n"
-#define TEST_FUNC_MSG_TIME_MSG "\t[==>> ASSERT: FUNC: %s -> %s, TIME: %ld ms, report: %s\n]"
-#define TEST_MSG "[====>>>>] ASSERT: TESTED: %d | PASSING: \033[32m%d\033[0m | FAILING: \033[31m%d\033[0m | CRASHING: %d\n"
-#define TEST_TOTAL_TIME_MSG "[====>>>>] ASSERT: TOTAL TIME IS: %ld ms\n"
+#define TEST_FUNC_MSG_TIME "\t[==>> ASSERT => FUNC: %s -> %s, TIME: %ld ms]\n"
+#define TEST_FUNC_MSG_TIME_MSG "\t[==>> ASSERT => FUNC: %s -> %s, TIME: %ld ms, report: %s\n]"
+#define TEST_FUNC_MSG "\t[==>> ASSERT => FUNC: %s -> %s\n]"
+#define TEST_FUNC_MSG_MSG "\t[==>> ASSERT => FUNC: %s -> %s, report %s\n]"
+#define TEST_MSG "[====>>>>] ASSERT => TESTED: %d | PASSING: \033[32m%d\033[0m | FAILING: \033[31m%d\033[0m | CRASHING: %d\n"
+#define TEST_TOTAL_TIME_MSG "[====>>>>] ASSERT => TOTAL TIME IS: %ld ms\n"
 
 const char *F_PASS = "\033[32mPASS\033[0m";
 const char *F_FAIL = "\033[31mFAIL\033[0m";
@@ -38,8 +40,18 @@ static i8 _ASSERT_CRASH_WHEN_FAIL = false;
 
 static i8 assert_status;
 static char fail_msg[128];
+static char current_file[64];
 
 static List *funcs;
+
+
+static void assert_write_fail_msg(char *msg) {
+    if (msg == NULL) {
+        strcpy(fail_msg, "fail");
+    } else {
+        strcpy(fail_msg, msg);
+    }
+}
 
 static const char *assert_get_status() {
     switch (assert_status) {
@@ -54,6 +66,18 @@ static const char *assert_get_status() {
         } break;
     }
     return NULL;
+}
+
+static const char *assert_get_status_fail_msg() {
+    if (assert_status == ASSERT_PASS) {
+        return "SUCCESS";
+    } else {
+        return fail_msg;
+    }
+}
+
+static void print_all_stuff() {
+
 }
 
 
@@ -81,7 +105,7 @@ void begin_assert(i32 flags) {
     assert_status = ASSERT_WAIT;
 }
 
-void assert_coll(void (*func_test)()) {
+void assert_coll_(void (*func_test)(), char *file) {
     time_t f_start = clock();
     func_test();
     time_t f_finish = clock();
@@ -95,46 +119,104 @@ void assert_coll(void (*func_test)()) {
             } else {
                 snprintf(buf, 200, TEST_FUNC_MSG_TIME, FUNC_NAME(func_test), assert_get_status(), test_func_time);
             }
+        } else {
+            if (_ASSERT_SHOW_ASSERT_MSG) {
+                snprintf(buf, 200, TEST_FUNC_MSG_MSG, FUNC_NAME(func_test), assert_get_status(), fail_msg);
+
+            }
         }
     }
     assert_status = ASSERT_WAIT;
 }
 
 void assert_true(boolean expression, char *msg) {
-
+    if (expression == true) {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_PASS;
+        } else {
+            return;
+        }
+    } else if (expression == false) {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_FAIL;
+            if (_ASSERT_SHOW_ASSERT_MSG) {
+                assert_write_fail_msg(msg);
+            }
+        } else {
+            return;
+        }
+    } else {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_CRASH;
+            if (_ASSERT_SHOW_ASSERT_MSG) {
+                assert_write_fail_msg(msg);
+            }
+        } else {
+            return;
+        }
+    }
 }
 
 
 void assert_false(boolean expression, char *msg) {
-    if (assert_status == ASSERT_FAIL || assert_status == ASSERT_CRASH) {
-        return;
-    }
-    if (expression == 0) {
-        assert_status = ASSERT_PASS;
-    } else if (expression == 1){
-#ifdef _ASSERT_SHOW_ASSERT_MSG
-    #ifdef _ASSERT_SHOW_FUNC
-        strcpy(fail_msg, msg);
-    #endif
-#endif
-        assert_status = ASSERT_FAIL;
+    if (expression == false) {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_PASS;
+        } else {
+            return;
+        }
+    } else if (expression == true) {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_FAIL;
+            if (_ASSERT_SHOW_ASSERT_MSG) {
+                assert_write_fail_msg(msg);
+            }
+        } else {
+            return;
+        }
     } else {
-        assert_status = ASSERT_CRASH;
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_CRASH;
+            if (_ASSERT_SHOW_ASSERT_MSG) {
+                assert_write_fail_msg(msg);
+            }
+        } else {
+            return;
+        }
     }
-
 }
 
 void assert_null(void *p, char *msg) {
     if (p == NULL) {
-        assert_status = ASSERT_PASS;
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_PASS;
+        }
     } else {
-        assert_status = ASSERT_FAIL;
-#ifdef _ASSERT_SHOW_ASSERT_MSG
-    #ifdef _ASSERT_SHOW_FUNC
-        strcpy(fail_msg, msg);
-    #endif
-#endif
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_write_fail_msg(msg);
+            assert_status = ASSERT_FAIL;
+        } else {
+            return;
+        }
     }
 }
 
-void end_assert();
+void assert_not_null(void *p, char *msg) {
+    if (p != NULL) {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_status = ASSERT_PASS;
+        }
+    } else {
+        if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
+            assert_write_fail_msg(msg);
+            assert_status = ASSERT_FAIL;
+        } else {
+            return;
+        }
+    }
+}
+
+void end_assert() {
+    print_all_stuff();
+    list_free_all(funcs);
+}
