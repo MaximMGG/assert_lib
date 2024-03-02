@@ -88,6 +88,7 @@ static void print_all_stuff() {
     printf("%s", buf);
     if (_ASSERT_SHOW_TOTAL_TIME) {
         snprintf(buf, 256, TEST_TOTAL_TIME_MSG, test_total_time);
+        printf("%s", buf);
     }
 }
 
@@ -107,8 +108,23 @@ static void check_file(char *file) {
     }
 }
 
+static void increes_counter() {
+    switch (assert_status) {
+        case ASSERT_PASS: {
+            tests_passing++;
+        } break;
+        case ASSERT_FAIL: {
+            tests_failing++;
+        } break;
+        case ASSERT_CRASH: {
+            tests_crashing++;
+        } break;
+    }
+    tests_total++;
+}
 
-void begin_assert(i32 flags) {
+
+void assert_begin(i32 flags) {
     if (flags & ASSERT_SHOW_FUNC) {
         _ASSERT_SHOW_FUNC = true;
         funcs = list_create(0, M_STRING);
@@ -135,7 +151,7 @@ void begin_assert(i32 flags) {
 void assert_coll_(void (*func_test)(), char *file) {
     time_t f_start = clock();
     func_test();
-    tests_total++;
+    increes_counter();
     time_t f_finish = clock();
 
     check_file(file);
@@ -156,6 +172,7 @@ void assert_coll_(void (*func_test)(), char *file) {
 
             }
         }
+        list_add(funcs, buf);
     }
     assert_status = ASSERT_WAIT;
 }
@@ -164,14 +181,12 @@ void assert_true(boolean expression, char *msg) {
     if (expression == true) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_PASS;
-            tests_passing++;
         } else {
             return;
         }
     } else if (expression == false) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_FAIL;
-            tests_failing++;
             if (_ASSERT_SHOW_ASSERT_MSG) {
                 assert_write_fail_msg(msg);
             }
@@ -180,7 +195,6 @@ void assert_true(boolean expression, char *msg) {
         }
     } else {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
-            tests_crashing++;
             assert_status = ASSERT_CRASH;
             if (_ASSERT_SHOW_ASSERT_MSG) {
                 assert_write_fail_msg(msg);
@@ -196,14 +210,12 @@ void assert_false(boolean expression, char *msg) {
     if (expression == false) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_PASS;
-            tests_passing++;
         } else {
             return;
         }
     } else if (expression == true) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_FAIL;
-            tests_failing++;
             if (_ASSERT_SHOW_ASSERT_MSG) {
                 assert_write_fail_msg(msg);
             }
@@ -213,7 +225,6 @@ void assert_false(boolean expression, char *msg) {
     } else {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_CRASH;
-            tests_crashing++;
             if (_ASSERT_SHOW_ASSERT_MSG) {
                 assert_write_fail_msg(msg);
             }
@@ -227,13 +238,11 @@ void assert_null(void *p, char *msg) {
     if (p == NULL) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_PASS;
-            tests_passing++;
         }
     } else {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_write_fail_msg(msg);
             assert_status = ASSERT_FAIL;
-            tests_failing++;
         } else {
             return;
         }
@@ -244,20 +253,18 @@ void assert_not_null(void *p, char *msg) {
     if (p != NULL) {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_status = ASSERT_PASS;
-            tests_passing++;
         }
     } else {
         if (assert_status != ASSERT_FAIL && assert_status != ASSERT_CRASH) {
             assert_write_fail_msg(msg);
             assert_status = ASSERT_FAIL;
-            tests_failing++;
         } else {
             return;
         }
     }
 }
 
-void end_assert() {
+void assert_end() {
     if (_ASSERT_SHOW_TOTAL_TIME) {
         i64 finish_time = clock();
         test_total_time = (finish_time - test_start_time) / (CLOCKS_PER_SEC * 1000);
