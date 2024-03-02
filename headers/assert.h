@@ -1,37 +1,25 @@
 #ifndef _ASSERT_H_
 #define _ASSERT_H_
 
-namespace ASSERT {
-    typedef int i32;
-    typedef unsigned int u32;
-#define FUNC_NAME(f) #f
+#include <util/m_list.h>
 
-    class Assert {
-        private:
-            i32 total_test;
-            i32 pass_test;
-            i32 fault_test;
-            i32 success_test;
-            long assert_total_time;
-            long assert_func_time;
-            long assert_total_start_time;
+typedef char boolean;
 
-            void assert_print_result();
 
-        public:
-            Assert();
-            ~Assert();
-            void assert_coll(void (*func_test)());
-            void begin_assert();
-            void assert_true(bool expression);
-            void assert_false(bool expression);
-            void assert_null(void *);
-            template <typename T, typename I> 
-            void assert_exualse (T t, I i);
-            void end_assert();
-    };
+typedef enum {
+    ASSERT_SHOW_FUNC_TIME = 0b0001,
+    ASSERT_SHOW_TOTAL_TIME = 0b0010,
+    ASSERT_LOG_RESULT = 0b0100,
+    ASSERT_CRASH_WHEN_FAIL = 0b1000
+} ASSERT_FLAGS;
 
-}
+
+void begin_assert(int flags);
+void assert_coll(void (*func_test)());
+void assert_true(boolean expression, char *msg);
+void assert_false(boolean expression, char *msg);
+void assert_null(void *, char *msg);
+void end_assert();
 
 
 #endif //_ASSERT_H_
