@@ -4,13 +4,11 @@
 // #include <stdlib.h>
 #include <string.h>
 
-#define FUNC_NAME(f) #f
-
 #define TEST_FILE "=> FILE: %s\n"
 #define TEST_FUNC_MSG_TIME "\t[==>> ASSERT => FUNC: %s -> %s, TIME: %ld ms]\n"
-#define TEST_FUNC_MSG_TIME_MSG "\t[==>> ASSERT => FUNC: %s -> %s, TIME: %ld ms, report: %s\n]"
-#define TEST_FUNC_MSG "\t[==>> ASSERT => FUNC: %s -> %s\n]"
-#define TEST_FUNC_MSG_MSG "\t[==>> ASSERT => FUNC: %s -> %s, report %s\n]"
+#define TEST_FUNC_MSG_TIME_MSG "\t[==>> ASSERT => FUNC: %s -> %s, TIME: %ld ms, report: %s]\n"
+#define TEST_FUNC_MSG "\t[==>> ASSERT => FUNC: %s -> %s]\n"
+#define TEST_FUNC_MSG_MSG "\t[==>> ASSERT => FUNC: %s -> %s, report %s]\n"
 #define TEST_MSG "[====>>>>] ASSERT => TESTED: %d | PASSING: \033[32m%d\033[0m | FAILING: \033[31m%d\033[0m | CRASHING: %d\n"
 #define TEST_TOTAL_TIME_MSG "[====>>>>] ASSERT => TOTAL TIME IS: %ld ms\n"
 
@@ -148,7 +146,7 @@ void assert_begin(i32 flags) {
     assert_status = ASSERT_WAIT;
 }
 
-void assert_coll_(void (*func_test)(), char *file) {
+void assert_coll_(void (*func_test)(), char *file, char *func) {
     time_t f_start = clock();
     func_test();
     increes_counter();
@@ -160,16 +158,15 @@ void assert_coll_(void (*func_test)(), char *file) {
         char buf[200];
         memset(buf, 0 , 200);
         if (_ASSERT_SHOW_FUNC_TIME) {
-            test_func_time = (f_finish - f_start) / (CLOCKS_PER_SEC * 1000);
+            test_func_time = (f_finish - f_start) / (CLOCKS_PER_SEC / 1000);
             if (_ASSERT_SHOW_ASSERT_MSG) {
-                snprintf(buf, 200, TEST_FUNC_MSG_TIME_MSG, FUNC_NAME(func_test), assert_get_status(), test_func_time, fail_msg);
+                snprintf(buf, 200, TEST_FUNC_MSG_TIME_MSG, func, assert_get_status(), test_func_time, assert_get_status_fail_msg());
             } else {
-                snprintf(buf, 200, TEST_FUNC_MSG_TIME, FUNC_NAME(func_test), assert_get_status(), test_func_time);
+                snprintf(buf, 200, TEST_FUNC_MSG_TIME, func, assert_get_status(), test_func_time);
             }
         } else {
             if (_ASSERT_SHOW_ASSERT_MSG) {
-                snprintf(buf, 200, TEST_FUNC_MSG_MSG, FUNC_NAME(func_test), assert_get_status(), fail_msg);
-
+                snprintf(buf, 200, TEST_FUNC_MSG_MSG, func, assert_get_status(), fail_msg);
             }
         }
         list_add(funcs, buf);
@@ -267,7 +264,7 @@ void assert_not_null(void *p, char *msg) {
 void assert_end() {
     if (_ASSERT_SHOW_TOTAL_TIME) {
         i64 finish_time = clock();
-        test_total_time = (finish_time - test_start_time) / (CLOCKS_PER_SEC * 1000);
+        test_total_time = (finish_time - test_start_time) / (CLOCKS_PER_SEC / 1000);
     }
 
     print_all_stuff();

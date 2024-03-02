@@ -4,8 +4,7 @@
 #include <util/m_list.h>
 
 typedef char boolean;
-#define assert_coll(f) assert_coll_((void (*)()) f, __FILE__)
-
+#define assert_coll(f) assert_coll_((void (*)()) f, __FILE__, #f)
 
 typedef enum {
     ASSERT_SHOW_FUNC_TIME = 0b00000001,
@@ -18,7 +17,7 @@ typedef enum {
 } ASSERT_FLAGS;
 
 
-void assert_coll_(void (*func)(), char *file);
+void assert_coll_(void (*func_test)(), char *file, char *func);
 void assert_begin(int flags);
 void assert_true(boolean expression, char *msg);
 void assert_false(boolean expression, char *msg);

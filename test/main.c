@@ -3,7 +3,7 @@
 void sumtest() {
     int a = 4;
     int b = 4;
-    assert_true(a + b == 8, "Incorrent sum");
+    assert_true(a + b == 7, "Incorrent sum");
 }
 
 void subtest() {
@@ -14,7 +14,8 @@ void subtest() {
 
 
 void nulltest() {
-    void *b = NULL;
+    char *c = "123";
+    void *b = c;
     assert_null(b, "Impossible");
 }
 
@@ -26,7 +27,7 @@ void notnulltest() {
 void multestfail() {
     int a = 2;
     int b = {2};
-    assert_false(a * b == 3, "Shoud be incorrent");
+    assert_false(a * b == 4, "Shoud be incorrent");
 }
 
 void severaltest() {
@@ -34,14 +35,11 @@ void severaltest() {
     int b = 8;
     int c = 12;
 
-    assert_true(a + b == 12, "incorrent sum2");
+    assert_true(a + b == 11, "incorrent sum2");
     assert_true(a + b + c == 24, "Incorrent sum3");
 
-    assert_true(a * b == 32, "Incorrect mult");
+    assert_true(a * b == 30, "Incorrect mult");
 }
-
-
-
 
 
 int main() {
