@@ -19,31 +19,15 @@ static char LOG_FINAL_TOTAL_TIME[64];
 static void alog_check_dir_exist() {
     DIR *d = opendir(m_dir_path);
     if (d == NULL) {
-        mkdir(m_dir_path, S_IWUSR | S_IRUSR);
+        mkdir(m_dir_path, S_IWUSR | S_IRUSR | S_IXUSR);
     }
 }
 static void alog_set_file_name() {
-    char *fmt = "Logging %d-%d-%d.log";
+    char *fmt = "Logging_%d-%d-%d.log";
     time_t t;
     t = time(&t);
     struct tm *timer = localtime(&t);
-    snprintf(m_file_name, 64, fmt, timer->tm_year, timer->tm_mon, timer->tm_yday);
-}
-
-static void alog_check_filename() {
-    DIR *d = opendir(m_dir_path);
-    struct dirent *dirr;
-    boolean same_name = false;
-
-    while((dirr = readdir(d)) != NULL) {
-        if (strcmp(m_file_name, dirr->d_name) == 0) {
-            same_name = true;
-            break;
-        }
-    }
-    if (!same_name) {
-        alog_set_file_name();
-    }
+    snprintf(m_file_name, 64, fmt, timer->tm_year, timer->tm_mon, timer->tm_mday);
 }
 
 static void alog_set_file_path() {
@@ -56,12 +40,38 @@ static void alog_set_file_path() {
     str_free(mfile);
 }
 
+static void alog_check_filename() {
+    DIR *d = opendir(m_dir_path);
+    struct dirent *dirr;
+    boolean same_name = false;
+
+    if (d == NULL) {
+        alog_check_dir_exist();
+        d = opendir(m_dir_path);
+    }
+
+    while((dirr = readdir(d)) != NULL) {
+        if (strcmp(m_file_name, dirr->d_name) == 0) {
+            same_name = true;
+            break;
+        }
+    }
+    if (!same_name) {
+        alog_set_file_name();
+        alog_set_file_path();
+    }
+}
+
+
 static int alog_start_work(void *funcs) {
     str *m_dpath = newstr(m_dir_path);
-    FILE *f = fopen(m_file_path, "w");
+    FILE *f = fopen(m_file_path, "a");
+
     if (f == NULL) {
         alog_check_filename();
+        f = fopen(m_file_path, "a");
     }
+
     time_t t = clock();
     t = time(&t);
     struct tm *timer = localtime(&t);
