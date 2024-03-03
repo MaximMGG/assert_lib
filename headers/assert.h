@@ -13,16 +13,14 @@ typedef enum {
     ASSERT_SHOW_TOTAL_TIME = 0b00000010,
     ASSERT_LOG_RESULT = 0b00000100,
     ASSERT_CRASH_WHEN_FAIL = 0b00001000,
-    ASSERT_SHOW_ASSERT_MSG = 0b00100000
-
+    ASSERT_SHOW_ASSERT_MSG = 0b00100000,
+    ASSERT_DEFAULT = 0b00110011,
 } ASSERT_FLAGS;
 
 
 void assert_coll_(void (*func_test)(), char *file, char *func);
-
 //setup functional flags and initialize asserts
 void assert_begin(int flags);
-
 //test will pass if expression == true, otherwise test will fail and msg will
 //copy in fail_msg
 void assert_true(boolean expression, char *msg);
