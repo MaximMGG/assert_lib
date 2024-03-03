@@ -44,9 +44,37 @@ static void alog_check_filename() {
     }
 }
 
+static void alog_set_file_path() {
+    str *mdir = newstr(m_dir_path);
+    str *mfile = newstr(m_file_name);
+    mdir = str_concat(mdir, mfile);
+    strcpy(m_file_path, mdir->str);
+
+    str_free(mdir);
+    str_free(mfile);
+}
+
 static int alog_start_work(void *funcs) {
     str *m_dpath = newstr(m_dir_path);
     FILE *f = fopen(m_file_path, "w");
+    if (f == NULL) {
+        alog_check_filename();
+    }
+    time_t t = clock();
+    t = time(&t);
+    struct tm *timer = localtime(&t);
+    char *fmt = "Start time is: %d-%d-%d:%d-%d\n";
+    char buf[256];
+    memset(buf, 0, 256);
+    snprintf(buf, 256, fmt, timer->tm_year, timer->tm_mon, timer->tm_yday, 
+                            timer->tm_hour, timer->tm_min, timer->tm_sec);
+    fputs(buf, f);
+    List *lfunc = (List *) funcs;
+
+    for(int i = 0; i < lfunc->len; i++) {
+        fputs(list_get(lfunc, i), f);
+    }
+
     
 
     return 0;
