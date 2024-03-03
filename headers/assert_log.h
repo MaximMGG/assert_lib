@@ -5,5 +5,6 @@
 
 void alog_set_path(char *path);
 void alog_log_test(List *funcs);
+void alog_init(char *path);
 
 #endif //_ASSERT_LOG_H_

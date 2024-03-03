@@ -7,14 +7,16 @@
 #include <sys/stat.h>
 #include <time.h>
 
+const char *DEF_DIR_PATH = "./log/";
+
 static char m_dir_path[256];
 static char m_file_name[64];
 static char m_file_path[312];
 
+static char LOG_FINAL_MSG[256];
+static char LOG_FINAL_TOTAL_TIME[64];
+
 static void alog_check_dir_exist() {
-    if (m_dir_path[0] == 0) {
-        strcpy(m_dir_path, "./log/");
-    }
     DIR *d = opendir(m_dir_path);
     if (d == NULL) {
         mkdir(m_dir_path, S_IWUSR | S_IRUSR);
@@ -75,7 +77,12 @@ static int alog_start_work(void *funcs) {
         fputs(list_get(lfunc, i), f);
     }
 
-    
+    fputs(LOG_FINAL_MSG, f);
+    if (LOG_FINAL_TOTAL_TIME[0] != 0) {
+        fputs(LOG_FINAL_TOTAL_TIME, f);
+    }
+
+    fclose(f);
 
     return 0;
 }
@@ -86,7 +93,16 @@ void alog_set_path(char *path) {
         strcpy(m_dir_path, path);
 }
 
+//TODO (Maxim) do multithread
 void alog_log_test(List *funcs) {
-    thrd_t *t;
-    thrd_create(t, alog_start_work, funcs);
+    alog_start_work(funcs);
 }
+
+void alog_init(char *path) {
+    if (path == NULL) {
+        strcpy(m_dir_path, DEF_DIR_PATH);
+    } else {
+        strcpy(m_dir_path, path);
+    }
+}
+

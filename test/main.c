@@ -43,7 +43,7 @@ void severaltest() {
 
 
 int main() {
-    assert_begin(ASSERT_SHOW_FUNC | ASSERT_SHOW_FUNC_TIME | ASSERT_SHOW_TOTAL_TIME | ASSERT_SHOW_ASSERT_MSG);
+    assert_begin(ASSERT_DEFAULT | ASSERT_LOG_RESULT);
     assert_coll(sumtest);
     assert_coll(subtest);
     assert_coll(nulltest);

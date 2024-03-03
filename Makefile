@@ -4,10 +4,10 @@ CC = gcc
 FLAGS = 
 DEBUG = -g
 LIBS =  -l_util
-SRC = ./src/assert.c
+SRC = ./src/assert.c ./src/assert_log.c ./test/main.c
 OBJ = $(patsubst %.c, %.o, $(SRC))
 
-all: $(STATIC_LIB)
+all: $(STATIC_LIB) $(BINARY)
 
 $(STATIC_LIB): $(OBJ)
 	ar rcs $@ $^

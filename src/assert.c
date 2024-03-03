@@ -1,4 +1,5 @@
 #include "../headers/assert.h"
+#include "../headers/assert_log.h"
 #include <util/util.h>
 #include <time.h>
 #include <string.h>
@@ -82,10 +83,15 @@ static void print_all_stuff() {
     char buf[256];
     memset(buf, 0, 256);
     snprintf(buf, 256, TEST_MSG, tests_total, tests_passing, tests_failing, tests_crashing);
+    list_add(funcs, buf);
     printf("%s", buf);
     if (_ASSERT_SHOW_TOTAL_TIME) {
         snprintf(buf, 256, TEST_TOTAL_TIME_MSG, test_total_time);
+        list_add(funcs, buf);
         printf("%s", buf);
+    }
+    if (_ASSERT_LOG_RESULT) {
+        alog_log_test(funcs);
     }
 }
 
@@ -120,7 +126,6 @@ static void increes_counter() {
     tests_total++;
 }
 
-
 void assert_begin(i32 flags) {
     if (flags & ASSERT_SHOW_FUNC) {
         _ASSERT_SHOW_FUNC = true;
@@ -135,6 +140,7 @@ void assert_begin(i32 flags) {
     }
     //TODO (Maxim) need to implement this functional
     if (flags & ASSERT_LOG_RESULT) {
+        alog_init(NULL);
         _ASSERT_LOG_RESULT = true;
     }
     if (flags & ASSERT_SHOW_ASSERT_MSG) {
