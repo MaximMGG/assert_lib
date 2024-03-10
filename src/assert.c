@@ -77,7 +77,8 @@ static const char *assert_get_status_fail_msg() {
 static void print_all_stuff() {
     if (_ASSERT_SHOW_FUNC) {
         for(int i = 0; i < funcs->len; i++) {
-            printf("%s", (char *)list_get(funcs, i));
+            char *msg = (char *) list_get(funcs, i);
+            printf("%s", msg);
         }
     }
     char buf[256];
@@ -129,7 +130,7 @@ static void increes_counter() {
 void assert_begin(i32 flags) {
     if (flags & ASSERT_SHOW_FUNC) {
         _ASSERT_SHOW_FUNC = true;
-        funcs = list_create(0, M_STRING);
+        funcs = list_create(0, (int) l_string);
     }
     if (flags & ASSERT_SHOW_FUNC_TIME) {
         _ASSERT_SHOW_FUNC_TIME = true;
