@@ -44,12 +44,12 @@ void severaltest() {
 
 int main() {
     assert_begin(ASSERT_DEFAULT | ASSERT_LOG_RESULT);
-    assert_coll(sumtest);
-    assert_coll(subtest);
-    assert_coll(nulltest);
-    assert_coll(notnulltest);
-    assert_coll(multestfail);
-    assert_coll(severaltest);
+    assert_call(sumtest);
+    assert_call(subtest);
+    assert_call(nulltest);
+    assert_call(notnulltest);
+    assert_call(multestfail);
+    assert_call(severaltest);
     assert_end();
     return 0;
 }

@@ -31,10 +31,10 @@ static void alog_set_file_name() {
 }
 
 static void alog_set_file_path() {
-    str *mdir = newstr(m_dir_path);
-    str *mfile = newstr(m_file_name);
+    STR mdir = newstr(m_dir_path);
+    STR mfile = newstr(m_file_name);
     mdir = str_concat(mdir, mfile);
-    strcpy(m_file_path, mdir->str);
+    strcpy(m_file_path, mdir);
 
     str_free(mdir);
     str_free(mfile);
@@ -64,7 +64,7 @@ static void alog_check_filename() {
 
 
 static int alog_start_work(void *funcs) {
-    str *m_dpath = newstr(m_dir_path);
+    STR m_dpath = newstr(m_dir_path);
     FILE *f = fopen(m_file_path, "a");
 
     if (f == NULL) {

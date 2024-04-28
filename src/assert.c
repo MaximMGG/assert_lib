@@ -154,7 +154,7 @@ void assert_begin(i32 flags) {
     assert_status = ASSERT_WAIT;
 }
 
-void assert_coll_(void (*func_test)(), char *file, char *func) {
+void assert_call_(void (*func_test)(), char *file, char *func) {
     time_t f_start = clock();
     func_test();
     increes_counter();

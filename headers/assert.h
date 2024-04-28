@@ -5,7 +5,7 @@
 
 typedef char boolean;
 
-#define assert_coll(f) assert_coll_((void (*)()) f, __FILE__, #f)
+#define assert_call(f) assert_call_((void (*)()) f, __FILE__, #f)
 
 typedef enum {
     ASSERT_SHOW_FUNC_TIME = 0b00000001,
@@ -18,7 +18,7 @@ typedef enum {
 } ASSERT_FLAGS;
 
 
-void assert_coll_(void (*func_test)(), char *file, char *func);
+void assert_call_(void (*func_test)(), char *file, char *func);
 //setup functional flags and initialize asserts
 void assert_begin(int flags);
 //test will pass if expression == true, otherwise test will fail and msg will

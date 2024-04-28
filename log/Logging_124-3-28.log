@@ -1,0 +1,10 @@
+Start time is: 124-3-118:12-45
+=> FILE: test/main.c
+	[==>> ASSERT => FUNC: sumtest -> [31mFAIL[0m, TIME: 0 ms, report: Incorrent sum]
+	[==>> ASSERT => FUNC: subtest -> [32mPASS[0m, TIME: 0 ms, report: SUCCESS]
+	[==>> ASSERT => FUNC: nulltest -> [31mFAIL[0m, TIME: 0 ms, report: Impossible]
+	[==>> ASSERT => FUNC: notnulltest -> [32mPASS[0m, TIME: 0 ms, report: SUCCESS]
+	[==>> ASSERT => FUNC: multestfail -> [31mFAIL[0m, TIME: 0 ms, report: Shoud be incorrent]
+	[==>> ASSERT => FUNC: severaltest -> [31mFAIL[0m, TIME: 0 ms, report: incorrent sum2]
+[====>>>>] ASSERT => TESTED: 6 | PASSING: [32m2[0m | FAILING: [31m4[0m | CRASHING: 0
+[====>>>>] ASSERT => TOTAL TIME IS: 0 ms
